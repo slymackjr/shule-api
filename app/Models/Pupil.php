@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Region;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,8 +11,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Pupil extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
+    protected $table = 'pupils';
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
     protected $fillable = [
         'first_name',
         'middle_name',
@@ -30,15 +35,14 @@ class Pupil extends Model
         'status',
         'payment_status'
     ];
-
     public function stream(): BelongsTo
     {
         return $this->belongsTo(Stream::class);
     }
 
-    public function student_parents(): HasMany
+    public function studentParents(): HasMany
     {
-        return $this->hasMany(Student_parent::class);
+        return $this->hasMany(StudentParent::class);
     }
 
     public function region(): BelongsTo

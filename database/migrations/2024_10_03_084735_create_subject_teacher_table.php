@@ -12,16 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('subject_teacher', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('school_id')->references('id')->on('schools');
-            $table->foreignId('teacher_id')->references('id')->on('teachers');
-            $table->foreignId('class_id')->references('id')->on('classes');
-            $table->foreignId('stream_id')->nullable()->references('id')->on('streams');
-            $table->foreignId('subject_id')->nullable()->references('id')->on('subjects');
+            $table->uuid('id')->primary();
+            $table->uuid('school_id');
+            $table->uuid('teacher_id');
+            $table->uuid('class_id');
+            $table->uuid('stream_id');
+            $table->uuid('subject_id');
             $table->integer('year')->nullable();
             $table->string('term')->nullable();
-            $table->foreignId('school_subject_id')->nullable()->references('id')->on('school_subject');
+            $table->uuid('school_subject_id');
             $table->timestamps();
+
+            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
+            $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->foreign('stream_id')->nullable()->references('id')->on('streams')->onDelete('cascade');
+            $table->foreign('subject_id')->nullable()->references('id')->on('subjects')->onDelete('cascade');
+            $table->foreign('school_subject_id')->nullable()->references('id')->on('school_subjectS')->onDelete('cascade');
         });
     }
 
@@ -30,6 +37,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('teacher_subject');
+        Schema::table('subject_teacher', function (Blueprint $table) {
+            $table->dropForeign(['school_id']);
+            $table->dropForeign(['teacher_id']);
+            $table->dropForeign(['class_id']);
+            $table->dropForeign(['stream_id']);
+            $table->dropForeign(['subject_id']);
+            $table->dropForeign(['school_subject_id']);
+        });
+        Schema::dropIfExists('subject_teacher');
     }
 };

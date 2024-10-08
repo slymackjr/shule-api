@@ -12,28 +12,27 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('school_registration_requests', function (Blueprint $table) {
-            $table->id();
-            $table->string('school_name');
-            $table->string('school_registration_number');
-            $table->string('school_phone_number');
-            $table->string('school_email');
-            $table->string('postal_address');
+            $table->uuid('id')->primary();
+            $table->string('school_name')->unique();
+            $table->string('school_registration_number')->unique();
+            $table->string('school_phone_number')->unique();
+            $table->string('school_email')->unique();
+            $table->string('postal_address')->unique();
             $table->string('type');
             $table->string('level');
             $table->string('logo')->nullable();
             $table->string('motto')->nullable();
-            $table->string('contract_number')->nullable();
+            $table->string('contract_number')->nullable()->unique();
             $table->string('status')->default('active');
-            $table->integer('ward_id');
-            $table->integer('district_id');
-            $table->integer('region_id');
+            $table->foreignId('ward_id')->constrained('wards');
+            $table->foreignId('district_id')->constrained('districts');
+            $table->foreignId('region_id')->constrained('regions');
             $table->string('street');
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('teacher_email');
-            $table->string('phone_number');
+            $table->string('teacher_email')->unique();
+            $table->string('phone_number')->unique();
             $table->timestamps();
-
 
         });
     }

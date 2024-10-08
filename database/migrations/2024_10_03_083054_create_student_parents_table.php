@@ -12,13 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('student_parents', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('pupil_registration_number');
             $table->boolean('payment_status')->default(false);
             $table->string('term');
-            $table->foreignId('pupil_id')->references('id')->on('pupils');
-            $table->foreignId('parent_id')->references('id')->on('parents');
+            $table->uuid('pupil_id');
+            $table->uuid('parent_id');
             $table->timestamps();
+
+            $table->foreign('pupil_id')->references('id')->on('pupils')->onDelete('cascade');
+            $table->foreign('parent_id')->references('id')->on('parents')->onDelete('cascade');
         });
     }
 
@@ -27,6 +30,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('student_parents', function (Blueprint $table) {
+            $table->dropForeign(['pupil_id']);
+            $table->dropForeign(['parent_id']);
+        });
         Schema::dropIfExists('student_parents');
     }
 };

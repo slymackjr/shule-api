@@ -3,16 +3,18 @@
 namespace App\Models;
 
 use App\Models\Pupil;
-use PhpParser\Node\Expr\Cast;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Attendence_log extends Model
+class AttendenceLog extends Model
 {
-    use HasFactory;
-
+    use HasFactory, HasUuids;
+    protected $table = 'attendance_logs';
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
     protected $fillable = [
         'status',
         'date',

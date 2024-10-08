@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('assign_subjects', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('class_name');
             $table->string('stream_name');
             $table->string('subject_name');

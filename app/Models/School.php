@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,29 +11,29 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class School extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
+    protected $table = 'schools';
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
     protected $fillable = [
-        'id',
-        'name',
-        'physical_address',
-        'email',
-        'logo',
-        'motto',
-        'phone_number',
-        'level',
-        'contact_person',
-        'school_number',
-        'cooperate_color',
-        'school_registration_no',
-        'contract_number',
-        'status',
-        'ward_ids',
-        'initial',
-        'type'
+            'name',
+            'ward_id',
+            'district_id',
+            'region_id',
+            'street',
+            'email',
+            'logo',
+            'motto',
+            'level',
+            'type',
+            'school_number',
+            'corporate_color',
+            'school_registration_number',
+            'contract_number',
+            'status',
     ];
-
-
     public function wards(): BelongsTo
     {
         return $this->belongsTo(Ward::class);

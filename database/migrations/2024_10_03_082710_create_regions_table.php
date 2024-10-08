@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('regions', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->unsignedBigInteger('country_id');
+            $table->foreignId('country_id')->constrained('countries')->onDelete('cascade');
             $table->timestamps();
-
-            $table->foreign('country_id')->references('id')->on('countries');
         });
     }
 
@@ -26,6 +24,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('regions', function (Blueprint $table) {
+            $table->dropForeign(['country_id']);
+        });
         Schema::dropIfExists('regions');
     }
 };

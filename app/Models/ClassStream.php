@@ -1,17 +1,17 @@
 <?php
 
 namespace App\Models;
-
 use App\Models\Stream;
 use App\Models\Classes;
 use App\Models\Teacher;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Class_stream extends Model
+class ClassStream extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'class_id',

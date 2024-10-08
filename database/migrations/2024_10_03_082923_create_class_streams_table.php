@@ -12,13 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('class_streams', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('class_id')->references('id')->on('classes');
-            $table->foreignId('stream_id')->references('id')->on('streams');
-            $table->foreignId('teacher_id')->nullable();
-            $table->foreignId('school_id')->references('id')->on('schools');
+            $table->uuid('id')->primary();
+            $table->uuid('class_id');
+            $table->uuid('stream_id');
+            $table->uuid('teacher_id')->nullable();
+            $table->uuid('school_id');
             $table->string('alias')->nullable();
             $table->timestamps();
+
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->foreign('stream_id')->references('id')->on('streams')->onDelete('cascade');
+            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
+            $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
         });
     }
 
@@ -27,6 +32,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('class_streams', function (Blueprint $table) {
+            $table->dropForeign(['class_id']);
+            $table->dropForeign(['stream_id']);
+            $table->dropForeign(['school_id']);
+        });
         Schema::dropIfExists('class_streams');
     }
 };

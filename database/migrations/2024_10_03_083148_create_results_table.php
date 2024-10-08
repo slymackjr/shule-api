@@ -12,14 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('results', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->integer('score');
             $table->string('remark');
             $table->string('pupil_reg_number');
             $table->char('grade', 1);
-            $table->foreignId('exam_id')->references('id')->on('exams');
-            $table->foreignId('subject_stream_id')->references('id')->on('subject_streams');
+            $table->uuid('exam_id');
+            $table->uuid('subject_stream_id');
             $table->timestamps();
+
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
+            $table->foreign('subject_stream_id')->references('id')->on('subject_streams')->onDelete('cascade');
         });
     }
 

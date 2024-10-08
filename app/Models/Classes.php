@@ -2,15 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Classes extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
+    protected $table = 'classes';
+    protected $primaryKey = 'id';
+    protected $keyType = 'string';
+    public $incrementing = false;
     protected $fillable = [
         'name',
         'school_id'
@@ -22,22 +27,22 @@ class Classes extends Model
 
     public function stream(): BelongsToMany
     {
-        return $this->belongsToMany(Stream::class, Class_stream::class, 'class_id', 'stream_id');
+        return $this->belongsToMany(Stream::class, ClassStream::class, 'class_id', 'stream_id');
     }
-    public function class_streams(): HasMany
+    public function classStreams(): HasMany
     {
-        return $this->hasMany(Class_stream::class, 'class_id');
+        return $this->hasMany(ClassStream::class, 'class_id');
     }
 
     public function subjects(): HasMany
     {
         return $this->hasMany(Subject::class);
     }
-    public function class_subjects(): BelongsToMany
+    public function classSubjects(): BelongsToMany
     {
         return $this->belongsToMany(Subject::class, 'subject_teacher', 'class_id', 'subject_id');
     }
-    public function tout_stream(): BelongsToMany
+    public function toutStream(): BelongsToMany
     {
         return $this->belongsToMany(Stream::class, 'subject_teacher', 'class_id', 'stream_id', 'teacher_id','id', Teacher::class);
     }

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Stream;
 use Illuminate\Support\Str;
 
 class StreamSeeder extends Seeder
@@ -13,11 +13,12 @@ class StreamSeeder extends Seeder
      */
     public function run(): void
     {
-        $streams = [];
         foreach (range('A', 'S') as $letter) {
-            $streams[] = ['name' => $letter, 'created_at' => now(), 'updated_at' => now()];
+            Stream::create([
+                'name' => $letter,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
         }
-
-        DB::table('streams')->insert($streams);
     }
 }

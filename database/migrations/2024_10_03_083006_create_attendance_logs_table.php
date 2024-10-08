@@ -12,12 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('attendence_logs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->tinyInteger('status');
             $table->date('date');
             $table->integer('pupil_id');
-            $table->foreignId('stream_id')->references('id')->on('streams');
+            $table->uuid('stream_id');
             $table->timestamps();
+
+            $table->foreign('stream_id')->references('id')->on('streams')->onDelete('cascade');
         });
     }
 
@@ -26,6 +28,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('attendence_logs', function (Blueprint $table) {
+            $table->dropForeign(['stream_id']);
+        });
         Schema::dropIfExists('attendence_logs');
     }
 };

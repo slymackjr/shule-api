@@ -12,29 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schools', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name')->unique();
-            $table->unsignedBigInteger('ward_id');
-            $table->unsignedBigInteger('district_id');
-            $table->unsignedBigInteger('region_id');
+            $table->foreignId('ward_id')->constrained('wards');
+            $table->foreignId('district_id')->constrained('districts');
+            $table->foreignId('region_id')->constrained('regions');
             $table->string('street');
-            $table->string('email')->unique()->nullable();
+            $table->string('email')->unique();
             $table->string('logo')->nullable();
             $table->string('motto')->nullable();
-            $table->string('phone_number')->unique();
             $table->string('level');
-            $table->string('type')->nullable();
+            $table->string('type');
             $table->string('school_number')->unique();
-            $table->string('contact_person')->unique();
             $table->string('corporate_color')->nullable();
-            $table->string('school_registration_no')->unique();
+            $table->string('school_registration_number')->unique();
             $table->string('contract_number')->nullable();
-            $table->string('status');
+            $table->string('status')->nullable();
             $table->timestamps();
-
-            $table->foreign('ward_id')->references('id')->on('wards');
-            $table->foreign('district_id')->references('id')->on('districts');
-            $table->foreign('region_id')->references('id')->on('regions');
         });
     }
 
@@ -43,6 +37,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('schools', function (Blueprint $table) {
+            $table->dropForeign(['ward_id']);
+            $table->dropForeign(['district_id']);
+            $table->dropForeign(['region_id']);
+        });
         Schema::dropIfExists('schools');
     }
 };

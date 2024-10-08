@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('wards', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->unsignedBigInteger('district_id');
+            $table->foreignId('district_id')->constrained('districts')->onDelete('cascade');
             $table->timestamps();
-
-            $table->foreign('district_id')->references('id')->on('districts');
         });
     }
 
@@ -26,6 +24,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('wards', function (Blueprint $table) {
+            $table->dropForeign(['district_id']);
+        });
         Schema::dropIfExists('wards');
     }
 };

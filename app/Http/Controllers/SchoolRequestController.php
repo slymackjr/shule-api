@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\District;
-use App\Models\Region;
-use App\Models\School;
-use App\Models\School_teacher;
-use Illuminate\Contracts\View\View;
-use App\Models\SchoolRegistrationRequest;
-use App\Models\Teacher;
 use App\Models\User;
 use App\Models\Ward;
+use App\Models\Region;
+use App\Models\School;
+use App\Models\Teacher;
+use App\Models\District;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\School_teacher;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
+use App\Models\SchoolRegistrationRequest;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\TeacherPasswordNotification;
 
 class SchoolRequestController extends Controller
 {
@@ -23,25 +27,35 @@ class SchoolRequestController extends Controller
     public function store(Request $request)
     {
 
-        $request->validate([
-            'school_name' => ['required'],
-            'school_registration_number' => ['required'],
-            'type' => ['required'],
-            'level' => ['required'],
-            'region' => ['required'],
-            'district' => ['required'],
-            'ward' => ['required'],
-            'first_name' => ['required'],
-            'last_name' => ['required'],
-            'phone_number' => ['required'],
-            'teacher_email' => ['required'],
-            'school_email' => ['required'],
-            'school_phone_number' => ['required'],
-            'street' => ['required'],
-            'postal_address' => ['required'],
+        // Validate the incoming request data
+        $validator = Validator::make($request->all(), [
+            'school_name' => 'required|string|max:255',
+            'school_registration_number' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'level' => 'required|string|max:255',
+            'region' => 'required|string|max:255',
+            'district' => 'required|string|max:255',
+            'ward' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:15',
+            'teacher_email' => 'required|email|max:255',
+            'school_email' => 'required|email|max:255',
+            'school_phone_number' => 'required|string|max:15',
+            'street' => 'required|string|max:255',
+            'postal_address' => 'required|string|max:255',
         ]);
 
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'response' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
+        // Create school registration request
         $schoolrequest = new SchoolRegistrationRequest;
         $schoolrequest->school_name = $request->school_name;
         $schoolrequest->school_registration_number = $request->school_registration_number;
@@ -50,12 +64,44 @@ class SchoolRequestController extends Controller
         $schoolrequest->region_id = $request->region;
         $schoolrequest->district_id = $request->district;
         $schoolrequest->ward_id = $request->ward;
-        $schoolrequest->school_name = $request->school_name;
         $schoolrequest->first_name = $request->first_name;
         $schoolrequest->last_name = $request->last_name;
-        $schoolrequest->primary_phone_number = $request->primary_phone_number;
-        $schoolrequest->secondary_phone_number = $request->secondary_phone_number;
+        $schoolrequest->phone_number = $request->phone_number;
+        $schoolrequest->school_phone_number = $request->school_phone_number;
+        $schoolrequest->school_email = $request->school_email;
+        $schoolrequest->teacher_email = $request->teacher_email;
+        $schoolrequest->street = $request->street;
+        $schoolrequest->postal_address = $request->postal_address;
         if ($schoolrequest->save()) {
+        // Generate random password
+        $randomPassword = Str::random(10);
+
+        $school = New School();
+        $school->name = $request->school_name;
+        $school->region_id = $request->region;
+        $school->district_id = $request->district;
+        $school->ward_id = $request->ward;
+        $school->street = $request->street;
+        $school->email = $request->school_email;
+        $school->type = $request->type;
+        $school->level = $request->level;
+        $school->school_number = $request->school_phone_number;
+        $school->school_registration_number = $request->school_registration_number;
+        $school->save();
+
+        // Create teacher record
+        $teacher = new Teacher;
+        $teacher->first_name = $request->first_name;
+        $teacher->last_name = $request->last_name;
+        $teacher->email = $request->teacher_email;
+        $teacher->phone_number = $request->phone_number;
+        $teacher->school_registration_number = $request->school_registration_number;
+        $teacher->password = Hash::make($randomPassword);
+        $teacher->save();
+
+        // Send notification to teacher with their password
+        Notification::route('mail', $teacher->email)->notify(new TeacherPasswordNotification($randomPassword));
+
             return response()->json(['response' => true, 'message' => 'Successfull registers a school! We will back after 3 days of work']);
         } else {
             return response()->json(['response' => false, 'message' => 'Something is  wrong! please try again!']);
@@ -117,7 +163,7 @@ class SchoolRequestController extends Controller
             return response()->json(['response' => false, 'message' => 'Failed, Please Try again!']);
         }
     }
-    public function verify(Request $request)
+    /* public function verify(Request $request)
     {
         $request->validate([
             'contract_number' => ['required'],
@@ -183,6 +229,6 @@ class SchoolRequestController extends Controller
                 return response()->json(['response' => false, 'message' => 'Failed, Please Try again!']);
             }
         }
-    }
+    } */
 
 }

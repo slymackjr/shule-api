@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('pupils', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('first_name');
             $table->string('middle_name');
             $table->string('last_name');
@@ -27,10 +27,12 @@ return new class extends Migration
             $table->string('gender');
             $table->string('pupil_reg_number')->unique()->index();
             $table->date('date_birth')->nullable();
-            $table->foreignId('stream_id')->references('id')->on('streams');
+            $table->uuid('stream_id');
             $table->boolean('payment_status')->default(false);
             $table->string('status')->default('active');
             $table->timestamps();
+
+            $table->foreign('stream_id')->references('id')->on('streams')->onDelete('cascade');
         });
     }
 
@@ -39,6 +41,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('pupils', function (Blueprint $table) {
+            $table->dropForeign(['stream_id']);
+        });
         Schema::dropIfExists('pupils');
     }
 };

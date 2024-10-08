@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('classes', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name')->unique();
-            $table->string('school_registration_no');
+            $table->uuid('school_id');
             $table->timestamps();
 
-            $table->foreign('school_registration_no')->references('school_registration_no')->on('schools')->onDelete('cascade');
+            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
         });
     }
 
@@ -27,9 +27,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('classes', function (Blueprint $table) {
-            $table->dropForeign(['school_registration_no']);
+            $table->dropForeign(['school_id']);
         });
-
         Schema::dropIfExists('classes');
     }
 };

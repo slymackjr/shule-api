@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('school_subject', function (Blueprint $table) {
-            $table->id();
+        Schema::create('school_subjects', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('sw_name')->nullable();
             $table->string('level');
             $table->string('code')->nullable();
-            $table->foreignId('school_id')->references('id')->on('schools');
+            $table->uuid('school_id');
             $table->timestamps();
+
+            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
         });
     }
 
@@ -27,6 +29,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('school_subjects', function (Blueprint $table) {
+            $table->dropForeign(['school_id']);
+        });
         Schema::dropIfExists('school_subjects');
     }
 };
