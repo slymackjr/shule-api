@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class PersonalAccessToken extends Model
 {
-    use HasUuids; // This should automatically generate UUIDs for the 'id' field
+    /* use HasUuids; // This should automatically generate UUIDs for the 'id' field
 
     protected $table = 'personal_access_tokens';
     protected $primaryKey = 'id';
@@ -25,5 +25,5 @@ class PersonalAccessToken extends Model
                 $model->{$model->getKeyName()} = (string) Str::uuid();
             }
         });
-    }
+    } */
 }
